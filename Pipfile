@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+hypothesis= "==6.6.0"
+pytest = "==6.2.2"
+pytest-xdist = "==2.2.1"
+pytest-html = "==3.1.1"
+pytest-cov = "~=2.7"
+pytest-asyncio = "~=0.10"
+isort = "*"
+flake8 = "*"
+flake8-html = "*"
+mypy = "*"
+pre-commit = "*"
+requests = "==2.25.1"
+
+[packages]
+fastapi = "~=0.63.0"
+uvicorn = "~=0.13.4"
+psycopg2 = "~=2.8.6"
+databases = "~=0.4.1"
+asyncpg = "~=0.22.0"
+SQLAlchemy = "~=1.3.23"
+gunicorn = "~=20.0.4"
+lru = "*"
+
+[requires]
+python_version = "3.8"

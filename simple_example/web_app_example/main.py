@@ -1,7 +1,7 @@
 from typing import Optional
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 
 from simple_example.domain_logic.exceptions import (
@@ -42,5 +42,9 @@ def app_setup(settings: Optional[Settings] = None):
     @app.on_event("shutdown")
     async def shutdown():
         await database.disconnect()
+
+    @app.get("/")
+    async def root():
+        return RedirectResponse("/docs")
 
     return app

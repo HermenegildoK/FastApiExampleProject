@@ -3,11 +3,10 @@ from functools import lru_cache
 from typing import Optional
 
 from pydantic import (
-    BaseModel,
     BaseSettings,
     ConstrainedStr,
     PostgresDsn,
-    root_validator, validator,
+    root_validator,
 )
 
 

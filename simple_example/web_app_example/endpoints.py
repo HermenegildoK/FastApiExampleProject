@@ -10,7 +10,6 @@ from simple_example.web_app_example.dependencies import get_manager, search_para
 main_router = APIRouter()
 
 
-
 @main_router.post("/search/")
 async def search_data(
     filters: Filters, manager: DomainLogicManager = Depends(get_manager)
@@ -56,6 +55,7 @@ async def search_data(
         count_upper_limit=count_upper_limit,
         count_lower_limit=count_lower_limit,
     )
+
 
 @main_router.get("/data/")
 async def list_data(

@@ -42,7 +42,7 @@ async def delete_data(
 
 
 @main_router.post("/filter/")
-async def search_data(
+async def filter_data(
     search_string: Optional[str] = None,
     data_type: Optional[int] = None,
     count_upper_limit: Optional[int] = None,

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import PositiveInt
 
-from simple_example.domain_logic.consts import CountLimit, DataTypeEnum
+from simple_example.domain_logic.consts import CountLimit
 from simple_example.domain_logic.exceptions import DuplicateDataException
 from simple_example.domain_logic.models import DataEntity, Filters, InputModel
 from simple_example.domain_logic.repository import AbstractRepository

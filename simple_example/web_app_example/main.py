@@ -28,12 +28,12 @@ def app_setup(settings: Optional[Settings] = None):
         return JSONResponse(status_code=400, content={"message": f"{exc.message}"})
 
     @app.exception_handler(ValidationError)
-    async def not_found_exception_handler(request: Request, exc: ValidationError):
+    async def validation_exception_handler(request: Request, exc: ValidationError):
         return JSONResponse(status_code=400, content={"detail": exc.errors()})
 
     app.include_router(main_router, prefix=settings.API_PREFIX)
     set_database(settings)
-    from simple_example.web_app_example.db_initialize import database  #noqa
+    from simple_example.web_app_example.db_initialize import database  # noqa
 
     @app.on_event("startup")
     async def startup():

@@ -1,8 +1,11 @@
 import pytest
-from fastapi.testclient import TestClient
-
 import simple_example
-from simple_example.domain_logic.consts import DataCounterLimits, DataTypeEnum
+from fastapi.testclient import TestClient
+from simple_example.domain_logic.consts import (
+    CountLimit,
+    DataCounterLimits,
+    DataTypeEnum,
+)
 from simple_example.domain_logic.manager import DomainLogicManager
 from simple_example.domain_logic.models import DataEntity, InputModel
 from simple_example.repository_implementation.memory_repo import (
@@ -23,7 +26,7 @@ def one_item():
         id=1,
         name="Pero",
         data_type=DataTypeEnum.ULTRA_SUPRA_COOL,
-        count=DataCounterLimits.MAX,
+        count=CountLimit(DataCounterLimits.MAX),
     )
 
 
@@ -56,7 +59,7 @@ def test_create_data(client, one_item):
     input_data = InputModel(
         name="Pero",
         data_type=DataTypeEnum.ULTRA_SUPRA_COOL,
-        count=DataCounterLimits.MIN,
+        count=CountLimit(DataCounterLimits.MIN),
     ).dict()
     response = client.post("/test/data/", json=input_data)
     assert response.status_code == 200
@@ -72,7 +75,9 @@ def test_search_data(client, one_item):
 
 def test_update_data(client, one_item):
     input_data = InputModel(
-        name="Pero", data_type=DataTypeEnum.SIMPLE, count=DataCounterLimits.MIN
+        name="Pero",
+        data_type=DataTypeEnum.SIMPLE,
+        count=CountLimit(DataCounterLimits.MIN),
     ).dict()
     response = client.put(f"/test/data/{one_item.id}", json=input_data)
     assert response.status_code == 200
@@ -88,7 +93,9 @@ def test_delete_data(client, one_item):
 
 def test_update_data_fail(client, one_item):
     input_data = InputModel(
-        name="Pero", data_type=DataTypeEnum.SIMPLE, count=DataCounterLimits.MAX
+        name="Pero",
+        data_type=DataTypeEnum.SIMPLE,
+        count=CountLimit(DataCounterLimits.MAX),
     ).dict()
     input_data.update(count=DataCounterLimits.MAX * 2)
     response = client.put(f"/test/data/{one_item.id}", json=input_data)

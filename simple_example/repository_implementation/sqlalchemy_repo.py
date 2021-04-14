@@ -2,6 +2,9 @@ from typing import List, Optional
 
 import databases
 from pydantic import PositiveInt, PostgresDsn
+from simple_example.domain_logic.exceptions import ObjectNotFound
+from simple_example.domain_logic.models import DataEntity, Filters, InputModel
+from simple_example.domain_logic.repository import AbstractRepository
 from sqlalchemy import (
     Column,
     Integer,
@@ -17,10 +20,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Query
-
-from simple_example.domain_logic.exceptions import ObjectNotFound
-from simple_example.domain_logic.models import DataEntity, Filters, InputModel
-from simple_example.domain_logic.repository import AbstractRepository
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -83,8 +82,8 @@ class SQLRepository(AbstractRepository):
                 EntityDataTable.c.count == input_data.count,
             )
         )
-        result = await self.database.fetch_one(select([exists(get_query)]).as_scalar())
-        return result[0]
+        result = await self.database.fetch_val(select([exists(get_query)]).as_scalar())
+        return result or 0
 
     async def update(self, item_id: PositiveInt, update_data: InputModel) -> DataEntity:
         query = (
@@ -93,10 +92,10 @@ class SQLRepository(AbstractRepository):
             .where(EntityDataTable.c.id == item_id)
             .values(update_data.dict(exclude_unset=True))
         )
-        result = await self.database.fetch_one(
+        result = await self.database.fetch_val(
             query.cte("updated_data").count().as_scalar()
         )
-        if result[0] > 0:
+        if result:
             return await self.get(item_id=item_id)
         raise ObjectNotFound()
 
@@ -106,10 +105,10 @@ class SQLRepository(AbstractRepository):
             .returning(EntityDataTable.c.id)
             .where(EntityDataTable.c.id == item_id)
         )
-        result = await self.database.fetch_one(
+        result = await self.database.fetch_val(
             query.cte("delete_data").count().as_scalar()
         )
-        return result[0] > 0
+        return result == 1
 
     @staticmethod
     def __filter_item(query: Query, filters: Filters) -> Query:

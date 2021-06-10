@@ -18,7 +18,7 @@ pre-commit = "*"
 requests = "==2.25.1"
 
 [packages]
-fastapi = "~=0.63.0"
+fastapi = "~=0.65.2"
 "uvicorn[standard]" = "~=0.13.4"
 psycopg2 = "~=2.8.6"
 databases = "~=0.4.1"

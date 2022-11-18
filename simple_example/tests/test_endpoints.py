@@ -1,3 +1,5 @@
+import os.path
+
 import pytest
 import simple_example
 from fastapi.testclient import TestClient
@@ -12,12 +14,30 @@ from simple_example.repository_implementation.memory_repo import (
     Database,
     MemoryRepository,
 )
-from simple_example.web_app_example.main import app_setup
-from simple_example.web_app_example.settings import Settings, get_settings
+from simple_example.web_app_example.application_globals import init_app_globals
+from simple_example.web_app_example.application_factory import app_setup
+from simple_example.web_app_example.settings import (
+    LoggingConfiguration,
+    Settings,
+    get_settings,
+)
 
 
 def get_settings_override():
-    return Settings(API_PREFIX="/test", USE_DATABASE=False)
+    return Settings(
+        API_PREFIX="/test",
+        USE_DATABASE=False,
+        LOGGING=LoggingConfiguration(
+            LOG_TO_FILE=True,
+            LOG_JSON=True,
+            JSON_LOG_FILE="test.json",
+            LOG_TO_LEVEL_FILES=True,
+            LOG_PATH=f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../../test_logs'))}",
+        ),
+    )
+
+
+init_app_globals(get_settings_override())
 
 
 @pytest.fixture(scope="function")

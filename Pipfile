@@ -25,6 +25,7 @@ databases = ">=0.4.1"
 asyncpg = ">=0.22.0"
 SQLAlchemy = ">=1.4"
 gunicorn = ">=20.1.0"
+JSON-log-formatter = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,0 +1,11 @@
+/test_logs/test.json
+.hypothesis
+.idea
+.pytest_cache
+/test_logs/CRITICAL.log
+/test_logs/DEBUG.log
+/test_logs/ERROR.log
+/test_logs/INFO.log
+/test_logs/WARNING.log
+/simple_example/web_app_example/.env
+/logs/

@@ -6,6 +6,7 @@ from pydantic import PositiveInt
 from simple_example.domain_logic.manager import DomainLogicManager
 from simple_example.domain_logic.models import DataEntity, Filters, InputModel
 from simple_example.web_app_example.dependencies import get_manager, search_parameters
+from simple_example.web_app_example import application_globals
 
 main_router = APIRouter()
 
@@ -14,6 +15,7 @@ main_router = APIRouter()
 async def search_data(
     filters: Filters, manager: DomainLogicManager = Depends(get_manager)
 ):
+    application_globals.logger.info(f"filters passed: {filters}")
     return await manager.list(filters=filters)
 
 
@@ -21,6 +23,7 @@ async def search_data(
 async def create_data(
     data: InputModel, manager: DomainLogicManager = Depends(get_manager)
 ):
+    application_globals.logger.info(f"data passed: {data.dict()}")
     return await manager.create(data)
 
 
@@ -30,6 +33,7 @@ async def update_data(
     data: InputModel,
     manager: DomainLogicManager = Depends(get_manager),
 ):
+    application_globals.logger.info(f"data passed: {data.dict()}")
     return await manager.update(item_id=item_id, update_data=data)
 
 
@@ -37,6 +41,7 @@ async def update_data(
 async def delete_data(
     item_id: PositiveInt, manager: DomainLogicManager = Depends(get_manager)
 ):
+    application_globals.logger.info(f"ID to delete: {item_id}")
     is_deleted = await manager.delete(item_id=item_id)
     return {"success": is_deleted}
 

@@ -40,6 +40,8 @@ uvicorn main:app_setup --port 8002
 API_PREFIX=/api
 USE_DATABASE=True
 DATABASE_URL=postgresql://USER:PASS@HOST:PORT/DBNAME
+LOGGING = 'LOGGING = '{"LOG_PATH": "/var/logs/fastapiexample", "LOG_TO_FILE": true, "LOG_TO_LEVEL_FILES": true, "JSON_LOG_FILE": "api_log.json", "LOG_SQL": true, "LOG_JSON": true, "MIN_LOG_LEVEL": 10}'
+'
 ```
 where `DATABASE_URL` is a valid url to PostgreSQL database
 

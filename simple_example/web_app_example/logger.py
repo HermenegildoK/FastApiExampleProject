@@ -6,6 +6,7 @@ from datetime import datetime
 from logging.handlers import WatchedFileHandler
 
 import json_log_formatter
+
 from simple_example.web_app_example.settings import LoggingConfiguration
 
 
@@ -67,7 +68,9 @@ def get_standard_logger(
 ) -> logging.Logger:
 
     # Global format Logger
-    prefix_log_format = f"[{name}] %(asctime)s %(levelname)-8s [%(module)s.%(funcName)s:%(lineno)d]: "
+    prefix_log_format = (
+        f"[{name}] %(asctime)s %(levelname)-8s [%(module)s.%(funcName)s:%(lineno)d]: "
+    )
 
     stream_log_format = prefix_log_format + "CONSOLE %(message)s"
 
@@ -142,5 +145,14 @@ def get_standard_logger(
                             formatter=app_formatter,
                         )
                     )
-
+        else:
+            standard_logger.addHandler(
+                create_watched_file_handler(
+                    log_path=log_settings.LOG_PATH,
+                    filename="application.log",
+                    level=log_settings.MIN_LOG_LEVEL,
+                    formatter=app_formatter,
+                    apply_level_filter=False,
+                )
+            )
     return standard_logger

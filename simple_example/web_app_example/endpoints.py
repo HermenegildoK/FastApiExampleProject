@@ -5,8 +5,8 @@ from pydantic import PositiveInt
 
 from simple_example.domain_logic.manager import DomainLogicManager
 from simple_example.domain_logic.models import DataEntity, Filters, InputModel
-from simple_example.web_app_example.dependencies import get_manager, search_parameters
 from simple_example.web_app_example import application_globals
+from simple_example.web_app_example.dependencies import get_manager, search_parameters
 
 main_router = APIRouter()
 
@@ -15,7 +15,7 @@ main_router = APIRouter()
 async def search_data(
     filters: Filters, manager: DomainLogicManager = Depends(get_manager)
 ):
-    application_globals.logger.info(f"filters passed: {filters}")
+    application_globals.logger.info(f"filters passed: {filters.dict()}")
     return await manager.list(filters=filters)
 
 

@@ -28,3 +28,6 @@ class Filters(BaseModel):
     data_type: Optional[DataTypeEnum] = None
     count_upper_limit: Optional[CountLimit] = None
     count_lower_limit: Optional[CountLimit] = None
+
+    class Config:
+        use_enum_values = True

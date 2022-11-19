@@ -7,5 +7,6 @@
 /test_logs/ERROR.log
 /test_logs/INFO.log
 /test_logs/WARNING.log
+/test_logs/databases.log
 /simple_example/web_app_example/.env
 /logs/

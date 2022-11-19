@@ -1,8 +1,9 @@
 import os.path
 
 import pytest
-import simple_example
 from fastapi.testclient import TestClient
+
+import simple_example
 from simple_example.domain_logic.consts import (
     CountLimit,
     DataCounterLimits,
@@ -14,7 +15,6 @@ from simple_example.repository_implementation.memory_repo import (
     Database,
     MemoryRepository,
 )
-from simple_example.web_app_example.application_globals import init_app_globals
 from simple_example.web_app_example.application_factory import app_setup
 from simple_example.web_app_example.settings import (
     LoggingConfiguration,
@@ -35,9 +35,6 @@ def get_settings_override():
             LOG_PATH=f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../../test_logs'))}",
         ),
     )
-
-
-init_app_globals(get_settings_override())
 
 
 @pytest.fixture(scope="function")

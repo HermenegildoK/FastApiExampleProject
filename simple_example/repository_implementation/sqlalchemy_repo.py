@@ -67,7 +67,7 @@ class SQLRepository(AbstractRepository):
         return await self.execute_query_with_one_result(query)
 
     async def create(self, input_data: InputModel) -> DataEntity:
-        insert_query = insert(EntityDataTable).values(**input_data.dict())
+        insert_query = insert(EntityDataTable).values(**input_data.model_dump())
         last_record_id = await self.database.execute(insert_query)
         get_query = select([EntityDataTable]).where(
             EntityDataTable.c.id == last_record_id
@@ -90,7 +90,7 @@ class SQLRepository(AbstractRepository):
             update(EntityDataTable)
             .returning(EntityDataTable.c.id)
             .where(EntityDataTable.c.id == item_id)
-            .values(update_data.dict(exclude_unset=True))
+            .values(update_data.model_dump(exclude_unset=True))
         )
         result = await self.database.fetch_val(
             query.cte("updated_data").count().as_scalar()

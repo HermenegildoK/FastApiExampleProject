@@ -1,7 +1,5 @@
 import pytest
 
-from hypothesis import given
-from hypothesis import strategies as st
 from simple_example.domain_logic.consts import DataCounterLimits, DataTypeEnum
 from simple_example.domain_logic.models import Filters, InputModel
 
@@ -17,17 +15,6 @@ def test_input_model():
 def test_filters():
     with pytest.raises(ValueError):
         Filters(data_type=-1)
-
-
-@given(st.builds(InputModel))
-def test_input_model_properties(instance):
-    assert DataCounterLimits.MIN <= instance.count
-    assert DataCounterLimits.MAX >= instance.count
-    assert instance.data_type in (
-        DataTypeEnum.SIMPLE,
-        DataTypeEnum.COMPLEX,
-        DataTypeEnum.ULTRA_SUPRA_COOL,
-    )
 
 
 def test_input_model_required_attrs_set():

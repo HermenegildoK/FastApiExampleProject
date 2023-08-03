@@ -1,22 +1,10 @@
 import logging
 import os.path
-import re
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import (
-    BaseModel,
-    BaseSettings,
-    ConstrainedStr,
-    PostgresDsn,
-    root_validator,
-    validator,
-)
-
-
-class PrefixString(ConstrainedStr):
-    strip_whitespace = True
-    regex = re.compile(r"^(/\w+)*[^/]$|^$")
+from pydantic import BaseModel, Field, PostgresDsn, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class LoggingConfiguration(BaseModel):
@@ -28,17 +16,19 @@ class LoggingConfiguration(BaseModel):
     LOG_JSON: bool = False
     MIN_LOG_LEVEL: int = logging.DEBUG
 
-    @validator("LOG_PATH")
-    def validate_log_path(cls, value):
-        if value and not os.path.isdir(value):
-            raise ValueError(f"'{value} is not valid folder")
-        return value
+    @field_validator("LOG_PATH")
+    @classmethod
+    def validate_log_path(cls, v):
+        if v and not os.path.isdir(v):
+            raise ValueError(f"'{v} is not valid folder")
+        return v
 
-    @validator("MIN_LOG_LEVEL")
-    def validate_min_log_level(cls, value):
-        if value is None:
+    @field_validator("MIN_LOG_LEVEL")
+    @classmethod
+    def validate_min_log_level(cls, v):
+        if v is None:
             return logging.DEBUG
-        if value not in (
+        if v not in (
             logging.CRITICAL,
             logging.FATAL,
             logging.ERROR,
@@ -48,43 +38,37 @@ class LoggingConfiguration(BaseModel):
             logging.DEBUG,
             logging.NOTSET,
         ):
-            raise ValueError(f"'{value}' is not a valid logging level.")
-        return value
+            raise ValueError(f"'{v}' is not a valid logging level.")
+        return v
 
-    @validator("LOG_TO_FILE")
-    def validate_log_to_file(cls, v, values, **kwargs):
-        if v and not values.get("LOG_PATH"):
+    @model_validator(mode="after")
+    def validate_log_json(self):
+        if self.LOG_JSON and (not self.LOG_TO_FILE or not self.LOG_PATH):
+            raise ValueError("JSON_LOG_FILE must be set when LOG_JSON=True")
+        if self.LOG_TO_FILE and not self.LOG_PATH:
             raise ValueError("LOG_PATH must be set when LOG_TO_FILE=True")
-        return v
-
-    @validator("LOG_JSON")
-    def validate_log_json(cls, v, values, **kwargs):
-
-        if v and (
-            not values.get("JSON_LOG_FILE")
-            or not values.get("LOG_TO_FILE")
-            or not values.get("LOG_PATH")
-        ):
-            raise ValueError(f"JSON_LOG_FILE must be set when LOG_JSON=True, {values}")
-        return v
+        return self
 
 
 class Settings(BaseSettings):
-    API_PREFIX: PrefixString
+    API_PREFIX: str = Field(strict=True, pattern=r"^(/\w+)*[^/]$|^$")
     USE_DATABASE: bool
     DATABASE_URL: Optional[PostgresDsn] = None
     APP_NAME: str = "FastAPI example"
     LOGGING: LoggingConfiguration = LoggingConfiguration()
 
-    @root_validator()
-    def validate(cls, values):
-        if values.get("USE_DATABASE") and not values.get("DATABASE_URL"):
+    @model_validator(mode="before")
+    @classmethod
+    def validate(cls, data):
+        if (
+            isinstance(data, dict)
+            and data.get("USE_DATABASE")
+            and not data.get("DATABASE_URL")
+        ):
             raise ValueError("DATABASE_URL must be set when USE_DATABASE=True")
-        return values
+        return data
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 @lru_cache()

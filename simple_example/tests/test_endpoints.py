@@ -69,7 +69,7 @@ def client(get_manager):
 def test_list_data(client, one_item):
     response = client.get("/test/data/")
     assert response.status_code == 200
-    assert response.json() == [one_item.dict()]
+    assert response.json() == [one_item.model_dump()]
 
 
 def test_create_data(client, one_item):
@@ -77,7 +77,7 @@ def test_create_data(client, one_item):
         name="Pero",
         data_type=DataTypeEnum.ULTRA_SUPRA_COOL,
         count=CountLimit(DataCounterLimits.MIN),
-    ).dict()
+    ).model_dump()
     response = client.post("/test/data/", json=input_data)
     assert response.status_code == 200
     input_data.update(id=2)
@@ -87,7 +87,7 @@ def test_create_data(client, one_item):
 def test_search_data(client, one_item):
     response = client.post("/test/search/", json={"q": "Pero"})
     assert response.status_code == 200
-    assert response.json() == [one_item.dict()]
+    assert response.json() == [one_item.model_dump()]
 
 
 def test_update_data(client, one_item):
@@ -95,7 +95,7 @@ def test_update_data(client, one_item):
         name="Pero",
         data_type=DataTypeEnum.SIMPLE,
         count=CountLimit(DataCounterLimits.MIN),
-    ).dict()
+    ).model_dump()
     response = client.put(f"/test/data/{one_item.id}", json=input_data)
     assert response.status_code == 200
     input_data.update(id=one_item.id)
@@ -113,17 +113,19 @@ def test_update_data_fail(client, one_item):
         name="Pero",
         data_type=DataTypeEnum.SIMPLE,
         count=CountLimit(DataCounterLimits.MAX),
-    ).dict()
+    ).model_dump()
     input_data.update(count=DataCounterLimits.MAX * 2)
     response = client.put(f"/test/data/{one_item.id}", json=input_data)
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
             {
-                "ctx": {"limit_value": 99},
+                "ctx": {"le": 99},
+                "input": 198,
                 "loc": ["body", "count"],
-                "msg": "ensure this value is less than or equal to 99",
-                "type": "value_error.number.not_le",
+                "msg": "Input should be less than or equal to 99",
+                "type": "less_than_equal",
+                "url": "https://errors.pydantic.dev/2.1/v/less_than_equal",
             }
         ]
     }

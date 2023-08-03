@@ -27,20 +27,21 @@ class MemoryRepository(AbstractRepository):
 
     async def create(self, input_data: InputModel) -> DataEntity:
         data_id = len(self.database.storage.keys()) + 1
-        data = DataEntity(**input_data.dict(), id=data_id)
+        data = DataEntity(**input_data.model_dump(), id=data_id)
         self.database.storage[data_id] = data
         return data
 
     async def exists(self, input_data: InputModel) -> bool:
-        for data_id in self.database.storage:
-            if self.database.storage[data_id].dict(exclude={"id"}) == input_data.dict():
-                return True
-        return False
+        return any(
+            self.database.storage[data_id].model_dump(exclude={"id"})
+            == input_data.model_dump()
+            for data_id in self.database.storage
+        )
 
     async def update(self, item_id: PositiveInt, update_data: InputModel) -> DataEntity:
         data = await self.get(item_id=item_id)
         if data:
-            new_data = update_data.dict(exclude_unset=True)
+            new_data = update_data.model_dump(exclude_unset=True)
             for k in new_data:
                 setattr(data, k, new_data[k])
             return data
@@ -52,18 +53,23 @@ class MemoryRepository(AbstractRepository):
 
     @staticmethod
     def __filter_item(item: DataEntity, filters: Filters):
-        if filters.search_string is not None:
-            if item.name.find(filters.search_string) == -1:
-                return False
-        if filters.count_lower_limit is not None:
-            if item.count < filters.count_lower_limit:
-                return False
-        if filters.count_upper_limit is not None:
-            if item.count > filters.count_upper_limit:
-                return False
-        if filters.data_type is not None:
-            if item.data_type != filters.data_type:
-                return False
+        if (
+            filters.search_string is not None
+            and item.name.find(filters.search_string) == -1
+        ):
+            return False
+        if (
+            filters.count_lower_limit is not None
+            and item.count < filters.count_lower_limit
+        ):
+            return False
+        if (
+            filters.count_upper_limit is not None
+            and item.count > filters.count_upper_limit
+        ):
+            return False
+        if filters.data_type is not None and item.data_type != filters.data_type:
+            return False
         return True
 
     async def list(self, filters: Filters) -> List[Optional[DataEntity]]:

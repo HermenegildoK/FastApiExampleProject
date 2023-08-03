@@ -15,7 +15,7 @@ main_router = APIRouter()
 async def search_data(
     filters: Filters, manager: DomainLogicManager = Depends(get_manager)
 ):
-    application_globals.logger.info(f"filters passed: {filters.dict()}")
+    application_globals.logger.info(f"filters passed: {filters.model_dump()}")
     return await manager.list(filters=filters)
 
 
@@ -23,7 +23,7 @@ async def search_data(
 async def create_data(
     data: InputModel, manager: DomainLogicManager = Depends(get_manager)
 ):
-    application_globals.logger.info(f"data passed: {data.dict()}")
+    application_globals.logger.info(f"data passed: {data.model_dump()}")
     return await manager.create(data)
 
 
@@ -33,7 +33,7 @@ async def update_data(
     data: InputModel,
     manager: DomainLogicManager = Depends(get_manager),
 ):
-    application_globals.logger.info(f"data passed: {data.dict()}")
+    application_globals.logger.info(f"data passed: {data.model_dump()}")
     return await manager.update(item_id=item_id, update_data=data)
 
 

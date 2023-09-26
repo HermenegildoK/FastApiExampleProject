@@ -125,7 +125,7 @@ def test_update_data_fail(client, one_item):
                 "loc": ["body", "count"],
                 "msg": "Input should be less than or equal to 99",
                 "type": "less_than_equal",
-                "url": "https://errors.pydantic.dev/2.1/v/less_than_equal",
+                "url": "https://errors.pydantic.dev/2.4/v/less_than_equal",
             }
         ]
     }

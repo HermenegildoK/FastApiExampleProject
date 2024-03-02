@@ -14,36 +14,35 @@ Do not use in production, if you do not have to.
 
 - crete virtual environment and install dependencies
 
-```shell
-pipenv -python 3.8
-pipenv install --dev
-```
+    ```shell
+    sudo apt-get install libpq5
+    pipenv -python 3.10
+    pipenv install --dev
+    ```
 
 - create `.env` file with content:
-
-```editorconfig
-API_PREFIX=/api
-USE_DATABASE=False
-
-```
+    
+    ```editorconfig
+    API_PREFIX=/api
+    USE_DATABASE=False
+    
+    ```
 
 - run app:
 
-```shell
-cd web_app_example
-uvicorn main:app_setup --port 8002
-```
+    ```shell
+    cd web_app_example
+    uvicorn main:app_setup --port 8002
+    ```
 
 - if you need database update `.env` file:
 
-```editorconfig
-API_PREFIX=/api
-USE_DATABASE=True
-DATABASE_URL=postgresql://USER:PASS@HOST:PORT/DBNAME
-LOGGING = 'LOGGING = '{"LOG_PATH": "/var/logs/fastapiexample", "LOG_TO_FILE": true, "LOG_TO_LEVEL_FILES": true, "JSON_LOG_FILE": "api_log.json", "LOG_SQL": true, "LOG_JSON": true, "MIN_LOG_LEVEL": 10}'
-'
-```
-where `DATABASE_URL` is a valid url to PostgreSQL database
+    ```editorconfig
+    API_PREFIX=/api
+    USE_DATABASE=True
+    DATABASE_URL=postgresql+asyncpg://USER:PASS@HOST:PORT/DBNAME
+    ```
+    where `DATABASE_URL` is a valid url to PostgreSQL database with `postgresql+asyncpg` prefix
 
 
 ## Running tests
@@ -51,3 +50,26 @@ where `DATABASE_URL` is a valid url to PostgreSQL database
 ```shell
 pytest 
 ```
+
+## Running in docker with database:
+
+- create or update `.env` file in folder `simple_example` :
+
+    ```editorconfig
+    API_PREFIX=/api
+    USE_DATABASE=True
+    DATABASE_URL=postgresql+asyncpg://USER:PASS@HOST:PORT/DBNAME
+    DATABASE_USER=USER
+    DATABASE_PASSWORD=PASS
+    DATABASE_NAME=DBNAME
+    ```
+
+    where `DATABASE_URL` is a valid url to PostgreSQL database with `postgresql+asyncpg` prefix
+
+- run:
+
+    ```shell
+    docker compose up
+    ```
+
+- after dockers are up you can visit `127.0.0.1:8000` to interact with the app

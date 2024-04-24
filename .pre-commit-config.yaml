@@ -6,7 +6,7 @@ repos:
         name: isort (python)
 
   - repo: https://github.com/psf/black
-    rev: 24.2.0 # Replace by any tag/version: https://github.com/psf/black/tags
+    rev: 24.4.1 # Replace by any tag/version: https://github.com/psf/black/tags
     hooks:
       - id: black
         name: black
